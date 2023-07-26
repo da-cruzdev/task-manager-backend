@@ -57,6 +57,18 @@ export class AuthService {
     return { accessToken, refreshToken, user };
   }
 
+  async logout(userId: number) {
+    await this.prisma.user.updateMany({
+      where: {
+        id: userId,
+        refreshToken: { not: null },
+      },
+      data: { refreshToken: null },
+    });
+
+    return { loggedOut: true };
+  }
+
   async getNewTokens(userId: number, rt: string) {
     const user = await this.prisma.user.findUnique({
       where: { id: userId },
