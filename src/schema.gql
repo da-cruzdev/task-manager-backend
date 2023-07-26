@@ -13,6 +13,12 @@ type Auth {
   exampleField: Int!
 }
 
+type SignResponse {
+  accessToken: String!
+  refreshToken: String!
+  user: User!
+}
+
 type Query {
   users: [User!]!
   user(email: String!): User!
@@ -23,8 +29,7 @@ type Mutation {
   createUser(createUserInput: CreateUserInput!): User!
   updateUser(updateUserInput: UpdateUserInput!): User!
   removeUser(id: Int!): User!
-  createAuth(createAuthInput: CreateAuthInput!): Auth!
-  updateAuth(updateAuthInput: UpdateAuthInput!): Auth!
+  signup(signupInput: SignupInput!): SignResponse!
   removeAuth(id: Int!): Auth!
 }
 
@@ -40,13 +45,8 @@ input UpdateUserInput {
   password: String
 }
 
-input CreateAuthInput {
-  """Example field (placeholder)"""
-  exampleField: Int!
-}
-
-input UpdateAuthInput {
-  """Example field (placeholder)"""
-  exampleField: Int
-  id: Int!
+input SignupInput {
+  username: String!
+  email: String!
+  password: String!
 }
