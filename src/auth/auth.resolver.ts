@@ -6,16 +6,19 @@ import { SignResponse } from './dto/signResonse';
 import { SigninInput } from './dto/signin.input';
 import { LogoutResponse } from './dto/logoutResponse';
 import { ParseIntPipe } from '@nestjs/common';
+import { Public } from './decorators/public.decorator';
 
 @Resolver(() => Auth)
 export class AuthResolver {
   constructor(private readonly authService: AuthService) {}
 
+  @Public()
   @Mutation(() => SignResponse)
   Signup(@Args('signupInput') signupInput: SignupInput) {
     return this.authService.signup(signupInput);
   }
 
+  @Public()
   @Mutation(() => SignResponse)
   Signin(@Args('signinInput') signinInput: SigninInput) {
     return this.authService.signin(signinInput);
