@@ -8,6 +8,7 @@ import { UpdateUserInput } from './dto/update-user.input';
 import { PrismaService } from 'src/prisma/prisma.service';
 import * as argon from 'argon2';
 import { PrismaClientKnownRequestError } from '@prisma/client/runtime/library';
+import { UserRole } from 'src/common/enums/user-role.enum';
 
 @Injectable()
 export class UserService {
@@ -22,6 +23,7 @@ export class UserService {
           username,
           email,
           password: hashedPassword,
+          role: UserRole.USER,
         },
       });
       return user;
