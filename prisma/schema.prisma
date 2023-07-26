@@ -17,7 +17,22 @@ model User {
   email String @unique
   password String
   refreshToken String?
-  role String @default("user") 
+  role String @default("user")
+  tasks Task[]
+  createAt DateTime @default(now())
+  updatedAt DateTime @default(now())
+}
+
+
+model Task {
+  id Int @id @default(autoincrement())
+  title String
+  description String
+  status String
+  assignedTo String
+  deadline DateTime
+  user User? @relation(fields: [userId], references: [id])
+  userId Int
   createAt DateTime @default(now())
   updatedAt DateTime @default(now())
 }
