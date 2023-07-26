@@ -1,10 +1,16 @@
-import { ForbiddenException, Injectable } from '@nestjs/common';
+import {
+  BadRequestException,
+  ForbiddenException,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import { SignupInput } from './dto/signup.input';
 import { UserService } from 'src/user/user.service';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { JwtService } from '@nestjs/jwt';
 import { ConfigService } from '@nestjs/config';
 import * as argon from 'argon2';
+import { SigninInput } from './dto/signin.input';
 
 @Injectable()
 export class AuthService {
@@ -17,6 +23,7 @@ export class AuthService {
 
   async signup(signupInput: SignupInput) {
     const user = await this.userService.create(signupInput);
+
     const { accessToken, refreshToken } = await this.createTokens(
       user.id,
       user.email,
@@ -26,16 +33,28 @@ export class AuthService {
     return { accessToken, refreshToken, user };
   }
 
-  findAll() {
-    return `This action returns all auth`;
-  }
+  async signin({ email, password }: SigninInput) {
+    const user = await this.userService.findOne(email);
 
-  findOne(id: number) {
-    return `This action returns a #${id} auth`;
-  }
+    if (!user) {
+      throw new NotFoundException(
+        `L'utilisateur avec l'email ${email} introuvable`,
+      );
+    }
 
-  remove(id: number) {
-    return `This action removes a #${id} auth`;
+    const isPasswordVerify = await argon.verify(user.password, password);
+
+    if (!isPasswordVerify) {
+      throw new BadRequestException(`Le mot de passe est incorrect`);
+    }
+
+    const { accessToken, refreshToken } = await this.createTokens(
+      user.id,
+      user.email,
+    );
+
+    await this.updateRefreshToken(user.id, refreshToken);
+    return { accessToken, refreshToken, user };
   }
 
   async getNewTokens(userId: number, rt: string) {

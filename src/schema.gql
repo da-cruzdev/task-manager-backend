@@ -8,11 +8,6 @@ type User {
   email: String!
 }
 
-type Auth {
-  """Example field (placeholder)"""
-  exampleField: Int!
-}
-
 type SignResponse {
   accessToken: String!
   refreshToken: String!
@@ -22,15 +17,14 @@ type SignResponse {
 type Query {
   users: [User!]!
   user(email: String!): User!
-  auth(id: Int!): Auth!
 }
 
 type Mutation {
   createUser(createUserInput: CreateUserInput!): User!
   updateUser(updateUserInput: UpdateUserInput!): User!
   removeUser(id: Int!): User!
-  signup(signupInput: SignupInput!): SignResponse!
-  removeAuth(id: Int!): Auth!
+  Signup(signupInput: SignupInput!): SignResponse!
+  Signin(signinInput: SigninInput!): SignResponse!
 }
 
 input CreateUserInput {
@@ -47,6 +41,11 @@ input UpdateUserInput {
 
 input SignupInput {
   username: String!
+  email: String!
+  password: String!
+}
+
+input SigninInput {
   email: String!
   password: String!
 }
