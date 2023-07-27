@@ -30,7 +30,7 @@ type Task {
   description: String!
   status: String!
   assignedTo: String
-  deadline: DateTime
+  deadline: DateTime!
 }
 
 """
@@ -86,7 +86,6 @@ input CreateTaskInput {
   description: String!
   status: String!
   assignedTo: String!
-  deadline: DateTime!
 }
 
 input UpdateTaskInput {
@@ -94,6 +93,5 @@ input UpdateTaskInput {
   description: String
   status: String
   assignedTo: String
-  deadline: DateTime
   id: Int!
 }

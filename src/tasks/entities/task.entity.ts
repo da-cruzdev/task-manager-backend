@@ -17,6 +17,6 @@ export class Task {
   @Field({ nullable: true })
   assignedTo: string;
 
-  @Field({ nullable: true })
+  @Field({ defaultValue: new Date() })
   deadline: Date;
 }

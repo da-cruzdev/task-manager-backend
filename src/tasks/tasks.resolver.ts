@@ -3,14 +3,22 @@ import { TasksService } from './tasks.service';
 import { Task } from './entities/task.entity';
 import { CreateTaskInput } from './dto/create-task.input';
 import { UpdateTaskInput } from './dto/update-task.input';
+import { CurrentUser } from 'src/auth/decorators/current-user.decorator';
+import { User } from 'src/user/entities/user.entity';
+import { UseGuards } from '@nestjs/common';
+import { AccessTokenGuard } from 'src/auth/guards/accessToken.guard';
 
 @Resolver(() => Task)
 export class TasksResolver {
   constructor(private readonly tasksService: TasksService) {}
 
+  @UseGuards(AccessTokenGuard)
   @Mutation(() => Task)
-  createTask(@Args('createTaskInput') createTaskInput: CreateTaskInput) {
-    return this.tasksService.create(createTaskInput);
+  createTask(
+    @Args('createTaskInput') createTaskInput: CreateTaskInput,
+    @CurrentUser() user: User,
+  ) {
+    return this.tasksService.create(createTaskInput, user);
   }
 
   @Query(() => [Task], { name: 'tasks' })

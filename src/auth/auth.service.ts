@@ -95,7 +95,7 @@ export class AuthService {
     const accessToken = this.jwt.sign(
       { userId, email },
       {
-        expiresIn: '10m',
+        expiresIn: '1h',
         secret: this.configService.get('ACCESS_TOKEN_SECRET'),
       },
     );

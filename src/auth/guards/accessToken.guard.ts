@@ -12,7 +12,8 @@ export class AccessTokenGuard extends AuthGuard('jwt') {
 
   getRequest<T = any>(context: ExecutionContext): T {
     const ctx = GqlExecutionContext.create(context);
-    return ctx.getContext().req;
+    const request = ctx.getContext().req;
+    return request;
   }
 
   canActivate(
@@ -22,7 +23,9 @@ export class AccessTokenGuard extends AuthGuard('jwt') {
       context.getHandler(),
       context.getClass(),
     ]);
+
     if (isPublic) return true;
+
     return super.canActivate(context);
   }
 }

@@ -1,26 +1,58 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { CreateTaskInput } from './dto/create-task.input';
 import { UpdateTaskInput } from './dto/update-task.input';
+import { PrismaService } from 'src/prisma/prisma.service';
+
+import { User } from 'src/user/entities/user.entity';
 
 @Injectable()
 export class TasksService {
-  create(createTaskInput: CreateTaskInput) {
-    return 'This action adds a new task';
+  constructor(private readonly prisma: PrismaService) {}
+  async create(createTaskInput: CreateTaskInput, user: User) {
+    const task = await this.prisma.task.create({
+      data: {
+        title: createTaskInput.title,
+        description: createTaskInput.description,
+        status: createTaskInput.status,
+        assignedTo: createTaskInput.assignedTo,
+        user: { connect: { id: user.id } },
+      },
+    });
+
+    return task;
   }
 
-  findAll() {
-    return `This action returns all tasks`;
+  async findAll() {
+    return await this.prisma.task.findMany();
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} task`;
+  async findOne(id: number) {
+    const task = await this.prisma.task.findUnique({
+      where: { id: id },
+    });
+
+    if (!task) {
+      throw new NotFoundException(`La tâche avec l'id ${id} n'existe pas`);
+    }
+
+    return task;
   }
 
-  update(id: number, updateTaskInput: UpdateTaskInput) {
-    return `This action updates a #${id} task`;
+  async update(id: number, updateTaskInput: UpdateTaskInput) {
+    const udateTask = await this.prisma.task.update({
+      where: { id },
+      data: { ...updateTaskInput },
+    });
+    if (!udateTask) {
+      throw new NotFoundException(`La tâche avec l'id ${id} n'existe pas`);
+    }
+
+    return udateTask;
   }
 
-  remove(id: number) {
-    return `This action removes a #${id} task`;
+  async remove(id: number) {
+    return await this.prisma.task.delete({
+      where: { id },
+    });
   }
 }

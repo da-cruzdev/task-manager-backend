@@ -29,8 +29,4 @@ export class CreateTaskInput {
   @IsString()
   @Field()
   assignedTo: string;
-
-  @IsDateString()
-  @Field()
-  deadline: Date;
 }
