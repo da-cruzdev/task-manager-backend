@@ -1,4 +1,5 @@
 import { ObjectType, Field, ID } from '@nestjs/graphql';
+import { TaskStatus } from '@prisma/client';
 
 @ObjectType()
 export class Task {
@@ -12,11 +13,11 @@ export class Task {
   description: string;
 
   @Field()
-  status: string;
+  status: TaskStatus;
+
+  @Field()
+  assignedToId: number;
 
   @Field({ nullable: true })
-  assignedTo: string;
-
-  @Field({ defaultValue: new Date() })
   deadline: Date;
 }

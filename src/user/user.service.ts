@@ -8,7 +8,6 @@ import { UpdateUserInput } from './dto/update-user.input';
 import { PrismaService } from 'src/prisma/prisma.service';
 import * as argon from 'argon2';
 import { PrismaClientKnownRequestError } from '@prisma/client/runtime/library';
-import { UserRole } from 'src/common/enums/user-role.enum';
 
 @Injectable()
 export class UserService {
@@ -23,7 +22,6 @@ export class UserService {
           username,
           email,
           password: hashedPassword,
-          role: UserRole.USER,
         },
       });
       return user;
@@ -70,5 +68,21 @@ export class UserService {
 
   async remove(id: number) {
     return this.prisma.user.delete({ where: { id } });
+  }
+
+  async getUserCreatedTasks(id: number) {
+    return this.prisma.user
+      .findUnique({
+        where: { id },
+      })
+      .createdtasks();
+  }
+
+  async getUserAssignedTasks(id: number) {
+    return this.prisma.user
+      .findUnique({
+        where: { id },
+      })
+      .assignedTasks();
   }
 }

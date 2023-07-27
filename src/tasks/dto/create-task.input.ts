@@ -4,7 +4,8 @@ import {
   IsString,
   MinLength,
   MaxLength,
-  IsDateString,
+  IsDate,
+  IsNumber,
 } from 'class-validator';
 
 @InputType()
@@ -24,9 +25,10 @@ export class CreateTaskInput {
   description: string;
 
   @Field()
-  status: string;
+  @IsNumber()
+  assignedTo: number;
 
-  @IsString()
+  @IsDate()
   @Field()
-  assignedTo: string;
+  deadline: Date;
 }
