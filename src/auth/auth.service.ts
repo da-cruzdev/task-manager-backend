@@ -11,6 +11,7 @@ import { JwtService } from '@nestjs/jwt';
 import { ConfigService } from '@nestjs/config';
 import * as argon from 'argon2';
 import { SigninInput } from './dto/signin.input';
+import { Buffer } from 'buffer';
 
 @Injectable()
 export class AuthService {
@@ -77,9 +78,7 @@ export class AuthService {
       throw new ForbiddenException(`Accès interdit`);
     }
 
-    const tokenMatch = await argon.verify(user.refreshToken, rt);
-
-    if (!tokenMatch) {
+    if (user.refreshToken !== rt) {
       throw new ForbiddenException(`Accès interdit`);
     }
 

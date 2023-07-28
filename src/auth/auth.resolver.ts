@@ -40,8 +40,6 @@ export class AuthResolver {
     @CurrentUserId() userId: number,
     @CurrentUser('refreshToken') refreshToken: string,
   ) {
-    // console.log(refreshToken);
-
     return this.authService.getNewTokens(userId, refreshToken);
   }
 }
