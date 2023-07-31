@@ -11,6 +11,7 @@ import { NewTokenResponse } from './dto/newTokensResponse';
 import { CurrentUserId } from './decorators/current-userId.decorator';
 import { CurrentUser } from './decorators/current-user.decorator';
 import { RefreshTokenGuard } from './guards/refreshToken.guard';
+import { User } from '@prisma/client';
 
 @Resolver(() => Auth)
 export class AuthResolver {
@@ -28,8 +29,11 @@ export class AuthResolver {
     return this.authService.signin(signinInput);
   }
 
+  @Public()
   @Mutation(() => LogoutResponse)
   Logout(@Args('id', ParseIntPipe) id: number) {
+    console.log(id);
+
     return this.authService.logout(id);
   }
 
@@ -38,7 +42,7 @@ export class AuthResolver {
   @Mutation(() => NewTokenResponse)
   GetNewTokens(
     @CurrentUserId() userId: number,
-    @CurrentUser('refreshToken') refreshToken: string,
+    @CurrentUser('refreshToken') refreshToken: User,
   ) {
     return this.authService.getNewTokens(userId, refreshToken);
   }

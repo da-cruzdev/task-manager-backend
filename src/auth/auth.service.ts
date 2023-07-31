@@ -11,7 +11,7 @@ import { JwtService } from '@nestjs/jwt';
 import { ConfigService } from '@nestjs/config';
 import * as argon from 'argon2';
 import { SigninInput } from './dto/signin.input';
-import { Buffer } from 'buffer';
+import { User } from '@prisma/client';
 
 @Injectable()
 export class AuthService {
@@ -70,16 +70,24 @@ export class AuthService {
     return { loggedOut: true };
   }
 
-  async getNewTokens(userId: number, rt: string) {
+  async getNewTokens(userId: number, refreshTokenOld: User) {
     const user = await this.prisma.user.findUnique({
       where: { id: userId },
     });
+
     if (!user) {
-      throw new ForbiddenException(`Accès interdit`);
+      throw new ForbiddenException(`Accès ,l'utilisateur est introuvable`);
     }
 
-    if (user.refreshToken !== rt) {
-      throw new ForbiddenException(`Accès interdit`);
+    const tokenMatch = await argon.verify(
+      user.refreshToken,
+      refreshTokenOld.refreshToken,
+    );
+
+    if (!tokenMatch) {
+      throw new ForbiddenException(
+        `Accès interdit, le refreshToken est incorrect`,
+      );
     }
 
     const { accessToken, refreshToken } = await this.createTokens(
