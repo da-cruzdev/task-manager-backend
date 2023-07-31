@@ -48,7 +48,7 @@ export class UserResolver {
     return await this.userService.remove(id);
   }
 
-  @Mutation(() => User)
+  @Query(() => User, { name: 'getUserInfo' })
   async getUserInfo(@CurrentUser() userId: User) {
     return await this.userService.getUserInfo(userId);
   }

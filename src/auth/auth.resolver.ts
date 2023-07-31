@@ -1,11 +1,11 @@
-import { Resolver, Mutation, Args } from '@nestjs/graphql';
+import { Resolver, Mutation, Args, Int } from '@nestjs/graphql';
 import { AuthService } from './auth.service';
 import { Auth } from './entities/auth.entity';
 import { SignupInput } from './dto/signup.input';
 import { SignResponse } from './dto/signResonse';
 import { SigninInput } from './dto/signin.input';
 import { LogoutResponse } from './dto/logoutResponse';
-import { ParseIntPipe, UseGuards } from '@nestjs/common';
+import { UseGuards } from '@nestjs/common';
 import { Public } from './decorators/public.decorator';
 import { NewTokenResponse } from './dto/newTokensResponse';
 import { CurrentUserId } from './decorators/current-userId.decorator';
@@ -31,7 +31,7 @@ export class AuthResolver {
 
   @Public()
   @Mutation(() => LogoutResponse)
-  Logout(@Args('id', ParseIntPipe) id: number) {
+  Logout(@Args('id', { type: () => Int }) id: number) {
     return this.authService.logout(id);
   }
 
