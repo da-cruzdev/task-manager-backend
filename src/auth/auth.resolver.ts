@@ -32,8 +32,6 @@ export class AuthResolver {
   @Public()
   @Mutation(() => LogoutResponse)
   Logout(@Args('id', ParseIntPipe) id: number) {
-    console.log(id);
-
     return this.authService.logout(id);
   }
 

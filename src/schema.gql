@@ -53,6 +53,7 @@ type Mutation {
   createUser(createUserInput: CreateUserInput!): User!
   updateUser(updateUserInput: UpdateUserInput!): User!
   removeUser(id: Int!): User!
+  getUserInfo: User!
   Signup(signupInput: SignupInput!): SignResponse!
   Signin(signinInput: SigninInput!): SignResponse!
   Logout(id: Float!): LogoutResponse!

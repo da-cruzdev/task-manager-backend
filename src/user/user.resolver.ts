@@ -12,7 +12,7 @@ import { User } from './entities/user.entity';
 import { CreateUserInput } from './dto/create-user.input';
 import { UpdateUserInput } from './dto/update-user.input';
 import { Task } from 'src/tasks/entities/task.entity';
-import { Public } from 'src/auth/decorators/public.decorator';
+import { CurrentUser } from 'src/auth/decorators/current-user.decorator';
 
 @Resolver(() => User)
 export class UserResolver {
@@ -46,6 +46,11 @@ export class UserResolver {
   @Mutation(() => User)
   async removeUser(@Args('id', { type: () => Int }) id: number): Promise<User> {
     return await this.userService.remove(id);
+  }
+
+  @Mutation(() => User)
+  async getUserInfo(@CurrentUser() userId: User) {
+    return await this.userService.getUserInfo(userId);
   }
 
   @ResolveField(() => [Task])

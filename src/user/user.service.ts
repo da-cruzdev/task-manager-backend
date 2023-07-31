@@ -8,6 +8,7 @@ import { UpdateUserInput } from './dto/update-user.input';
 import { PrismaService } from 'src/prisma/prisma.service';
 import * as argon from 'argon2';
 import { PrismaClientKnownRequestError } from '@prisma/client/runtime/library';
+import { User } from './entities/user.entity';
 
 @Injectable()
 export class UserService {
@@ -68,6 +69,18 @@ export class UserService {
 
   async remove(id: number) {
     return this.prisma.user.delete({ where: { id } });
+  }
+
+  async getUserInfo(user: User) {
+    const userInfo = await this.prisma.user.findUnique({
+      where: { id: user.id },
+    });
+    if (!userInfo) {
+      throw new NotFoundException(
+        `Utilisateur introuvable, email incorrect!!!`,
+      );
+    }
+    return userInfo;
   }
 
   async getUserCreatedTasks(id: number) {
