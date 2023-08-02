@@ -1,9 +1,9 @@
-import { ObjectType, Field, ID } from '@nestjs/graphql';
+import { ObjectType, Field, Int } from '@nestjs/graphql';
 import { TaskStatus } from '@prisma/client';
 
 @ObjectType()
 export class Task {
-  @Field(() => ID)
+  @Field(() => Int)
   id: number;
 
   @Field()

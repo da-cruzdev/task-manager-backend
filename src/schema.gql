@@ -3,7 +3,7 @@
 # ------------------------------------------------------
 
 type User {
-  id: ID!
+  id: Int!
   username: String!
   email: String!
   role: String!
@@ -12,7 +12,7 @@ type User {
 }
 
 type Task {
-  id: ID!
+  id: Int!
   title: String!
   description: String!
   status: String!

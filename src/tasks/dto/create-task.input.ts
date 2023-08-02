@@ -19,7 +19,7 @@ export class CreateTaskInput {
 
   @IsNotEmpty()
   @IsString()
-  @MinLength(10)
+  @MinLength(15)
   @MaxLength(200)
   @Field()
   description: string;
