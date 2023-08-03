@@ -4,10 +4,14 @@ import { UpdateTaskInput } from './dto/update-task.input';
 import { PrismaService } from 'src/prisma/prisma.service';
 
 import { User } from 'src/user/entities/user.entity';
+import { NotificationsGateway } from 'src/notifications/notifications.gateway';
 
 @Injectable()
 export class TasksService {
-  constructor(private readonly prisma: PrismaService) {}
+  constructor(
+    private readonly prisma: PrismaService,
+    private readonly notificationGateWay: NotificationsGateway,
+  ) {}
 
   async create(data: CreateTaskInput, user: User) {
     const task = await this.prisma.task.create({
@@ -19,6 +23,11 @@ export class TasksService {
         user: { connect: { id: user.id } },
       },
     });
+
+    this.notificationGateWay.sendNotificationToUser(
+      data.assignedTo,
+      `Nouvelle tâche assignée: ${data.title}`,
+    );
 
     return task;
   }
