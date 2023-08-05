@@ -15,11 +15,18 @@ type Task {
   id: Int!
   title: String!
   description: String!
-  status: String!
+  status: TaskStatus!
   assignedToId: Float!
   deadline: DateTime
   owner: User!
   assignUser: User!
+}
+
+"""Statut de la tâche"""
+enum TaskStatus {
+  PENDING
+  IN_PROGRESS
+  DONE
 }
 
 """
@@ -59,7 +66,7 @@ type Mutation {
   Logout(id: Int!): LogoutResponse!
   GetNewTokens: NewTokenResponse!
   createTask(createTaskInput: CreateTaskInput!): Task!
-  updateTask(id: Float!, data: UpdateTaskInput!): Task!
+  updateTask(id: Int!, data: UpdateTaskInput!): Task!
   removeTask(id: Int!): Task!
 }
 
@@ -98,4 +105,5 @@ input UpdateTaskInput {
   description: String
   assignedTo: Float
   deadline: DateTime
+  status: String!
 }

@@ -1,5 +1,17 @@
 import { ObjectType, Field, Int } from '@nestjs/graphql';
 import { TaskStatus } from '@prisma/client';
+import { registerEnumType } from '@nestjs/graphql';
+
+export enum TasksStatus {
+  PENDING = 'PENDING',
+  IN_PROGRESS = 'IN_PROGRESS',
+  DONE = 'DONE',
+}
+
+registerEnumType(TaskStatus, {
+  name: 'TaskStatus',
+  description: 'Statut de la tâche',
+});
 
 @ObjectType()
 export class Task {
@@ -12,7 +24,7 @@ export class Task {
   @Field()
   description: string;
 
-  @Field()
+  @Field(() => TaskStatus)
   status: TaskStatus;
 
   @Field()

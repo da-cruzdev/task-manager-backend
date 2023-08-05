@@ -13,7 +13,7 @@ import { CreateTaskInput } from './dto/create-task.input';
 import { UpdateTaskInput } from './dto/update-task.input';
 import { CurrentUser } from 'src/auth/decorators/current-user.decorator';
 import { User } from 'src/user/entities/user.entity';
-import { ParseIntPipe, UseGuards } from '@nestjs/common';
+import { UseGuards } from '@nestjs/common';
 import { AccessTokenGuard } from 'src/auth/guards/accessToken.guard';
 
 @Resolver(() => Task)
@@ -41,7 +41,7 @@ export class TasksResolver {
 
   @Mutation(() => Task)
   updateTask(
-    @Args('id', ParseIntPipe) id: number,
+    @Args('id', { type: () => Int }) id: number,
     @Args('data') updateTaskInput: UpdateTaskInput,
   ) {
     return this.tasksService.update(id, updateTaskInput);

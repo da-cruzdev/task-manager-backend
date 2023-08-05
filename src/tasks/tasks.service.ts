@@ -49,12 +49,13 @@ export class TasksService {
   }
 
   async update(id: number, data: UpdateTaskInput) {
-    const { assignedTo, ...otherData } = data;
+    const { assignedTo, status, ...otherData } = data;
     const udateTask = await this.prisma.task.update({
       where: { id },
       data: {
         ...otherData,
         assignedToId: assignedTo,
+        status: status,
       },
     });
     if (!udateTask) {
