@@ -59,7 +59,7 @@ type Query {
 
 type Mutation {
   createUser(createUserInput: CreateUserInput!): User!
-  updateUser(updateUserInput: UpdateUserInput!): User!
+  updateUser(data: UpdateUserInput!): User!
   removeUser(id: Int!): User!
   Signup(signupInput: SignupInput!): SignResponse!
   Signin(signinInput: SigninInput!): SignResponse!
@@ -80,6 +80,8 @@ input UpdateUserInput {
   username: String
   email: String
   password: String
+  oldPassword: String!
+  newPassword: String!
 }
 
 input SignupInput {

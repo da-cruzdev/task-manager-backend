@@ -1,4 +1,5 @@
 import {
+  BadRequestException,
   ConflictException,
   Injectable,
   NotFoundException,
@@ -52,17 +53,32 @@ export class UserService {
     return user;
   }
 
-  async update(id: number, updateUserInput: UpdateUserInput) {
+  async updateUserInfos({ id }: User, data: UpdateUserInput) {
+    const { newPassword, oldPassword, ...otherData } = data;
+
+    const user = await this.prisma.user.findFirst({
+      where: { id },
+    });
+
+    if (!user) {
+      throw new NotFoundException(`L'utilisateur  introuvable`);
+    }
+
+    if (oldPassword) {
+      const isCorrectPassword = await argon.verify(user.password, oldPassword);
+
+      if (!isCorrectPassword) {
+        throw new BadRequestException(`Le mot de passe est incorrect`);
+      }
+    }
+
     const updatedUser = await this.prisma.user.update({
       where: { id },
       data: {
-        ...updateUserInput,
+        ...otherData,
+        password: newPassword,
       },
     });
-
-    if (!updatedUser) {
-      throw new NotFoundException(`Utilisateur introuvable`);
-    }
 
     return updatedUser;
   }
