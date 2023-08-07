@@ -5,6 +5,8 @@ import { PrismaService } from 'src/prisma/prisma.service';
 
 import { User } from 'src/user/entities/user.entity';
 import { NotificationsGateway } from 'src/notifications/notifications.gateway';
+import { getTasksByFilterCriteria } from 'src/common/utils/functions';
+import { TasksFilterOptions } from './dto/tasks-filter.dto';
 
 @Injectable()
 export class TasksService {
@@ -31,9 +33,12 @@ export class TasksService {
 
     return task;
   }
+  async findAll(filterOptions?: TasksFilterOptions) {
+    const filter = getTasksByFilterCriteria(filterOptions);
 
-  async findAll() {
-    return await this.prisma.task.findMany();
+    return await this.prisma.task.findMany({
+      where: filter,
+    });
   }
 
   async findOne(id: number) {

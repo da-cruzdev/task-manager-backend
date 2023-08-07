@@ -15,6 +15,7 @@ import { CurrentUser } from 'src/auth/decorators/current-user.decorator';
 import { User } from 'src/user/entities/user.entity';
 import { UseGuards } from '@nestjs/common';
 import { AccessTokenGuard } from 'src/auth/guards/accessToken.guard';
+import { TasksFilterOptions } from './dto/tasks-filter.dto';
 
 @Resolver(() => Task)
 export class TasksResolver {
@@ -30,8 +31,11 @@ export class TasksResolver {
   }
 
   @Query(() => [Task], { name: 'tasks' })
-  findAll() {
-    return this.tasksService.findAll();
+  findAll(
+    @Args('filterOptions', { nullable: true })
+    filterOptions?: TasksFilterOptions,
+  ) {
+    return this.tasksService.findAll(filterOptions);
   }
 
   @Query(() => Task, { name: 'task' })

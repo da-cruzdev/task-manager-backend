@@ -41,8 +41,8 @@ export class TokensService {
 
   async updateRefreshToken(userId: number, refreshToken: string) {
     const hashedRefreshToken = await argon.hash(refreshToken);
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    const user = await this.prisma.user.update({
+
+    await this.prisma.user.update({
       where: { id: userId },
       data: { refreshToken: hashedRefreshToken },
     });
