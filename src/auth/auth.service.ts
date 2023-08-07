@@ -7,30 +7,29 @@ import {
 import { SignupInput } from './dto/signup.input';
 import { UserService } from 'src/user/user.service';
 import { PrismaService } from 'src/prisma/prisma.service';
-import { JwtService } from '@nestjs/jwt';
-import { ConfigService } from '@nestjs/config';
+
 import * as argon from 'argon2';
 import { SigninInput } from './dto/signin.input';
 import { User } from '@prisma/client';
+import { TokensService } from 'src/tokens/tokens.service';
 
 @Injectable()
 export class AuthService {
   constructor(
     private readonly userService: UserService,
     private readonly prisma: PrismaService,
-    private readonly jwt: JwtService,
-    private readonly configService: ConfigService,
+    private readonly tokenService: TokensService,
   ) {}
 
   async signup(signupInput: SignupInput) {
     const user = await this.userService.create(signupInput);
 
-    const { accessToken, refreshToken } = await this.createTokens(
+    const { accessToken, refreshToken } = await this.tokenService.createTokens(
       user.id,
       user.email,
     );
 
-    await this.updateRefreshToken(user.id, refreshToken);
+    await this.tokenService.updateRefreshToken(user.id, refreshToken);
     return { accessToken, refreshToken, user };
   }
 
@@ -49,12 +48,12 @@ export class AuthService {
       throw new BadRequestException(`Le mot de passe est incorrect`);
     }
 
-    const { accessToken, refreshToken } = await this.createTokens(
+    const { accessToken, refreshToken } = await this.tokenService.createTokens(
       user.id,
       user.email,
     );
 
-    await this.updateRefreshToken(user.id, refreshToken);
+    await this.tokenService.updateRefreshToken(user.id, refreshToken);
     return { accessToken, refreshToken, user };
   }
 
@@ -90,47 +89,11 @@ export class AuthService {
       );
     }
 
-    const { accessToken, refreshToken } = await this.createTokens(
+    const { accessToken, refreshToken } = await this.tokenService.createTokens(
       user.id,
       user.email,
     );
-    await this.updateRefreshToken(user.id, refreshToken);
+    await this.tokenService.updateRefreshToken(user.id, refreshToken);
     return { accessToken, refreshToken, user };
-  }
-
-  async createTokens(userId: number, email: string) {
-    const accessToken = this.jwt.sign(
-      { userId, email },
-      {
-        expiresIn: '24h',
-        secret: this.configService.get('ACCESS_TOKEN_SECRET'),
-      },
-    );
-
-    const refreshToken = this.jwt.sign(
-      {
-        userId,
-        email,
-        accessToken,
-      },
-      {
-        expiresIn: '3d',
-        secret: this.configService.get('REFRESH_TOKEN_SECRET'),
-      },
-    );
-
-    return {
-      accessToken,
-      refreshToken,
-    };
-  }
-
-  async updateRefreshToken(userId: number, refreshToken: string) {
-    const hashedRefreshToken = await argon.hash(refreshToken);
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    const user = await this.prisma.user.update({
-      where: { id: userId },
-      data: { refreshToken: hashedRefreshToken },
-    });
   }
 }

@@ -3,11 +3,12 @@ import { AuthService } from './auth.service';
 import { AuthResolver } from './auth.resolver';
 import { UserService } from 'src/user/user.service';
 import { PrismaService } from 'src/prisma/prisma.service';
-import { JwtModule, JwtService } from '@nestjs/jwt';
+import { JwtModule } from '@nestjs/jwt';
 import { AccessTokenStrategy } from './strategies/accessToken.strategy';
 import { RefreshTokenStrategy } from './strategies/refreshToken.strategy';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { PassportModule } from '@nestjs/passport';
+import { TokensService } from 'src/tokens/tokens.service';
 
 @Module({
   imports: [
@@ -26,9 +27,9 @@ import { PassportModule } from '@nestjs/passport';
     AuthService,
     UserService,
     PrismaService,
-    JwtService,
     AccessTokenStrategy,
     RefreshTokenStrategy,
+    TokensService,
   ],
 })
 export class AuthModule {}

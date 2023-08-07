@@ -12,6 +12,7 @@ import { APP_GUARD } from '@nestjs/core';
 import { AccessTokenGuard } from './auth/guards/accessToken.guard';
 import { TasksModule } from './tasks/tasks.module';
 import { NotificationsModule } from './notifications/notifications.module';
+import { TokensModule } from './tokens/tokens.module';
 
 @Module({
   imports: [
@@ -24,6 +25,7 @@ import { NotificationsModule } from './notifications/notifications.module';
     AuthModule,
     TasksModule,
     NotificationsModule,
+    TokensModule,
   ],
   controllers: [AppController],
   providers: [
