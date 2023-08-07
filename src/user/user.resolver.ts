@@ -8,11 +8,12 @@ import {
   Parent,
 } from '@nestjs/graphql';
 import { UserService } from './user.service';
-import { User } from './entities/user.entity';
 import { CreateUserInput } from './dto/create-user.input';
 import { UpdateUserInput } from './dto/update-user.input';
 import { Task } from 'src/tasks/entities/task.entity';
 import { CurrentUser } from 'src/auth/decorators/current-user.decorator';
+import { User } from './entities/user.entity';
+import { UpdateUserResponse } from './dto/updateUserResponse';
 
 @Resolver(() => User)
 export class UserResolver {
@@ -35,11 +36,11 @@ export class UserResolver {
     return await this.userService.findOne(email);
   }
 
-  @Mutation(() => User)
+  @Mutation(() => UpdateUserResponse)
   async updateUser(
     @Args('data') updateUserInput: UpdateUserInput,
     @CurrentUser() user: User,
-  ): Promise<User> {
+  ): Promise<UpdateUserResponse> {
     return await this.userService.updateUserInfos(user, updateUserInput);
   }
 

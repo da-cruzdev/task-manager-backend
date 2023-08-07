@@ -10,10 +10,14 @@ import { PrismaService } from 'src/prisma/prisma.service';
 import * as argon from 'argon2';
 import { PrismaClientKnownRequestError } from '@prisma/client/runtime/library';
 import { User } from './entities/user.entity';
+import { TokensService } from 'src/tokens/tokens.service';
 
 @Injectable()
 export class UserService {
-  constructor(private readonly prisma: PrismaService) {}
+  constructor(
+    private readonly prisma: PrismaService,
+    private readonly tokenService: TokensService,
+  ) {}
 
   async create(createUserInput: CreateUserInput) {
     try {
@@ -60,27 +64,48 @@ export class UserService {
       where: { id },
     });
 
+    let updatedUser;
+
     if (!user) {
       throw new NotFoundException(`L'utilisateur  introuvable`);
     }
+
+    updatedUser = await this.prisma.user.update({
+      where: { id },
+      data: {
+        ...otherData,
+      },
+    });
 
     if (oldPassword) {
       const isCorrectPassword = await argon.verify(user.password, oldPassword);
 
       if (!isCorrectPassword) {
-        throw new BadRequestException(`Le mot de passe est incorrect`);
+        throw new BadRequestException(`L'ancien mot de passe est incorrect`);
+      }
+      if (newPassword === '' || !newPassword) {
+        throw new BadRequestException(
+          `Veuillez entrer le nouveau mot de passe`,
+        );
+      } else {
+        const hashedNewPassword = await argon.hash(newPassword);
+        updatedUser = await this.prisma.user.update({
+          where: { id },
+          data: {
+            password: hashedNewPassword,
+          },
+        });
       }
     }
 
-    const updatedUser = await this.prisma.user.update({
-      where: { id },
-      data: {
-        ...otherData,
-        password: newPassword,
-      },
-    });
+    const { accessToken, refreshToken } = await this.tokenService.createTokens(
+      updatedUser.id,
+      updatedUser.email,
+    );
 
-    return updatedUser;
+    await this.tokenService.updateRefreshToken(updatedUser.id, refreshToken);
+
+    return { updatedUser, accessToken, refreshToken };
   }
 
   async remove(id: number) {
