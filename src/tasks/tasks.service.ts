@@ -1,4 +1,4 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { Injectable, NotFoundException, UseGuards } from '@nestjs/common';
 import { CreateTaskInput } from './dto/create-task.input';
 import { UpdateTaskInput } from './dto/update-task.input';
 import { PrismaService } from 'src/prisma/prisma.service';
@@ -7,6 +7,9 @@ import { User } from 'src/user/entities/user.entity';
 import { NotificationsGateway } from 'src/notifications/notifications.gateway';
 import { getTasksByFilterCriteria } from 'src/common/utils/functions';
 import { TasksFilterOptions } from './dto/tasks-filter.dto';
+import { RolesGuard } from 'src/auth/guards/roles.guard';
+import { Roles } from 'src/auth/decorators/roles.decorator';
+import { Prisma, Role } from '@prisma/client';
 
 @Injectable()
 export class TasksService {
@@ -33,6 +36,7 @@ export class TasksService {
 
     return task;
   }
+
   async findAll(filterOptions?: TasksFilterOptions) {
     const filter = getTasksByFilterCriteria(filterOptions);
 
@@ -73,6 +77,28 @@ export class TasksService {
   async remove(id: number) {
     return await this.prisma.task.delete({
       where: { id },
+    });
+  }
+
+  async getUserCreatedTasks(user: User, filterOptions?: TasksFilterOptions) {
+    const whereClause: Prisma.TaskWhereInput = {
+      userId: user.id,
+      ...getTasksByFilterCriteria(filterOptions),
+    };
+    return await this.prisma.task.findMany({
+      where: whereClause,
+      orderBy: { createAt: 'desc' },
+    });
+  }
+
+  async getUserAssignedTasks(user: User, filterOptions?: TasksFilterOptions) {
+    const whereClause: Prisma.TaskWhereInput = {
+      assignedToId: user.id,
+      ...getTasksByFilterCriteria(filterOptions),
+    };
+    return await this.prisma.task.findMany({
+      where: whereClause,
+      orderBy: { createAt: 'desc' },
     });
   }
 

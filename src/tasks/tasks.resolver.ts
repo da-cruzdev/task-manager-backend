@@ -43,6 +43,24 @@ export class TasksResolver {
     return this.tasksService.findOne(id);
   }
 
+  @Query(() => [Task], { name: 'createdTasks' })
+  getCreatedTasks(
+    @CurrentUser() user: User,
+    @Args('filterOptions', { nullable: true })
+    filterOptions?: TasksFilterOptions,
+  ) {
+    return this.tasksService.getUserCreatedTasks(user, filterOptions);
+  }
+
+  @Query(() => [Task], { name: 'assignedTasks' })
+  getAssignedTasks(
+    @CurrentUser() user: User,
+    @Args('filterOptions', { nullable: true })
+    filterOptions?: TasksFilterOptions,
+  ) {
+    return this.tasksService.getUserAssignedTasks(user, filterOptions);
+  }
+
   @Mutation(() => Task)
   updateTask(
     @Args('id', { type: () => Int }) id: number,

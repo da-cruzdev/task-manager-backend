@@ -61,6 +61,8 @@ type Query {
   getUserInfo: User!
   tasks(filterOptions: TasksFilterOptions): [Task!]!
   task(id: Int!): Task!
+  createdTasks(filterOptions: TasksFilterOptions): [Task!]!
+  assignedTasks(filterOptions: TasksFilterOptions): [Task!]!
 }
 
 input TasksFilterOptions {
