@@ -16,6 +16,8 @@ import { User } from 'src/user/entities/user.entity';
 import { UseGuards } from '@nestjs/common';
 import { AccessTokenGuard } from 'src/auth/guards/accessToken.guard';
 import { TasksFilterOptions } from './dto/tasks-filter.dto';
+import { PaginationOptions } from './dto/pagination.dto';
+import { ResponseWithPagination } from './dto/responseWithPagination';
 
 @Resolver(() => Task)
 export class TasksResolver {
@@ -43,22 +45,34 @@ export class TasksResolver {
     return this.tasksService.findOne(id);
   }
 
-  @Query(() => [Task], { name: 'createdTasks' })
+  @Query(() => ResponseWithPagination, { name: 'createdTasks' })
   getCreatedTasks(
     @CurrentUser() user: User,
     @Args('filterOptions', { nullable: true })
     filterOptions?: TasksFilterOptions,
+    @Args('paginationOptions', { nullable: true })
+    paginationOptions?: PaginationOptions,
   ) {
-    return this.tasksService.getUserCreatedTasks(user, filterOptions);
+    return this.tasksService.getUserCreatedTasks(
+      user,
+      filterOptions,
+      paginationOptions,
+    );
   }
 
-  @Query(() => [Task], { name: 'assignedTasks' })
+  @Query(() => ResponseWithPagination, { name: 'assignedTasks' })
   getAssignedTasks(
     @CurrentUser() user: User,
     @Args('filterOptions', { nullable: true })
     filterOptions?: TasksFilterOptions,
+    @Args('paginationOptions', { nullable: true })
+    paginationOptions?: PaginationOptions,
   ) {
-    return this.tasksService.getUserAssignedTasks(user, filterOptions);
+    return this.tasksService.getUserAssignedTasks(
+      user,
+      filterOptions,
+      paginationOptions,
+    );
   }
 
   @Mutation(() => Task)

@@ -1,4 +1,4 @@
-import { Injectable, NotFoundException, UseGuards } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { CreateTaskInput } from './dto/create-task.input';
 import { UpdateTaskInput } from './dto/update-task.input';
 import { PrismaService } from 'src/prisma/prisma.service';
@@ -7,9 +7,8 @@ import { User } from 'src/user/entities/user.entity';
 import { NotificationsGateway } from 'src/notifications/notifications.gateway';
 import { getTasksByFilterCriteria } from 'src/common/utils/functions';
 import { TasksFilterOptions } from './dto/tasks-filter.dto';
-import { RolesGuard } from 'src/auth/guards/roles.guard';
-import { Roles } from 'src/auth/decorators/roles.decorator';
-import { Prisma, Role } from '@prisma/client';
+import { Prisma } from '@prisma/client';
+import { PaginationOptions } from './dto/pagination.dto';
 
 @Injectable()
 export class TasksService {
@@ -80,26 +79,51 @@ export class TasksService {
     });
   }
 
-  async getUserCreatedTasks(user: User, filterOptions?: TasksFilterOptions) {
+  async getUserCreatedTasks(
+    user: User,
+    filterOptions?: TasksFilterOptions,
+    paginationOptions?: PaginationOptions,
+  ) {
     const whereClause: Prisma.TaskWhereInput = {
       userId: user.id,
       ...getTasksByFilterCriteria(filterOptions),
     };
-    return await this.prisma.task.findMany({
+
+    const total = await this.prisma.task.count({ where: whereClause });
+
+    const { skip, take } = paginationOptions;
+
+    const tasks = await this.prisma.task.findMany({
       where: whereClause,
       orderBy: { createAt: 'desc' },
+      skip,
+      take,
     });
+
+    return { data: tasks, totalCount: total };
   }
 
-  async getUserAssignedTasks(user: User, filterOptions?: TasksFilterOptions) {
+  async getUserAssignedTasks(
+    user: User,
+    filterOptions?: TasksFilterOptions,
+    paginationOptions?: PaginationOptions,
+  ) {
     const whereClause: Prisma.TaskWhereInput = {
       assignedToId: user.id,
       ...getTasksByFilterCriteria(filterOptions),
     };
-    return await this.prisma.task.findMany({
+
+    const total = await this.prisma.task.count({ where: whereClause });
+
+    const { skip, take } = paginationOptions;
+
+    const tasks = await this.prisma.task.findMany({
       where: whereClause,
       orderBy: { createAt: 'desc' },
+      take,
+      skip,
     });
+    return { data: tasks, totalCount: total };
   }
 
   async getTaskCreator(taskId: number) {
