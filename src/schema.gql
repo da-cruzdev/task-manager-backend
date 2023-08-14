@@ -40,6 +40,11 @@ type UpdateUserResponse {
   refreshToken: String!
 }
 
+type UserResponseData {
+  data: [User!]
+  totalCount: Int
+}
+
 type SignResponse {
   accessToken: String!
   refreshToken: String!
@@ -61,7 +66,7 @@ type ResponseWithPagination {
 }
 
 type Query {
-  users: [User!]!
+  users(filterOptions: UsersFilterOptions, paginationOptions: PaginationOptions): UserResponseData!
   user(email: String!): User!
   getUserInfo: User!
   tasks(filterOptions: TasksFilterOptions): [Task!]!
@@ -70,14 +75,19 @@ type Query {
   assignedTasks(filterOptions: TasksFilterOptions, paginationOptions: PaginationOptions): ResponseWithPagination!
 }
 
-input TasksFilterOptions {
+input UsersFilterOptions {
   query: String
-  status: String
+  role: String
 }
 
 input PaginationOptions {
   skip: Int
   take: Int
+}
+
+input TasksFilterOptions {
+  query: String
+  status: String
 }
 
 type Mutation {

@@ -14,6 +14,9 @@ import { Task } from 'src/tasks/entities/task.entity';
 import { CurrentUser } from 'src/auth/decorators/current-user.decorator';
 import { User } from './entities/user.entity';
 import { UpdateUserResponse } from './dto/updateUserResponse';
+import { UserResponseData } from './dto/userResponseData';
+import { UsersFilterOptions } from './dto/users-filter.dto';
+import { PaginationOptions } from 'src/tasks/dto/pagination.dto';
 
 @Resolver(() => User)
 export class UserResolver {
@@ -26,9 +29,14 @@ export class UserResolver {
     return await this.userService.create(createUserInput);
   }
 
-  @Query(() => [User], { name: 'users' })
-  async findAll(): Promise<User[]> {
-    return await this.userService.findAll();
+  @Query(() => UserResponseData, { name: 'users' })
+  async findAll(
+    @Args('filterOptions', { nullable: true })
+    filterOptions?: UsersFilterOptions,
+    @Args('paginationOptions', { nullable: true })
+    paginationOptions?: PaginationOptions,
+  ) {
+    return await this.userService.findAll(filterOptions, paginationOptions);
   }
 
   @Query(() => User, { name: 'user' })

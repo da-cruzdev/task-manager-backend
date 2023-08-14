@@ -11,6 +11,10 @@ import * as argon from 'argon2';
 import { PrismaClientKnownRequestError } from '@prisma/client/runtime/library';
 import { User } from './entities/user.entity';
 import { TokensService } from 'src/tokens/tokens.service';
+import { UsersFilterOptions } from './dto/users-filter.dto';
+import { PaginationOptions } from 'src/tasks/dto/pagination.dto';
+import { Prisma } from '@prisma/client';
+import { getUsersByFilter } from 'src/common/utils/functions';
 
 @Injectable()
 export class UserService {
@@ -41,8 +45,26 @@ export class UserService {
     }
   }
 
-  async findAll() {
-    return await this.prisma.user.findMany();
+  async findAll(
+    filterOptions?: UsersFilterOptions,
+    paginationOptions?: PaginationOptions,
+  ) {
+    const whereClause: Prisma.UserWhereInput = {
+      ...getUsersByFilter(filterOptions),
+    };
+
+    const total = await this.prisma.user.count({ where: whereClause });
+
+    const { skip, take } = paginationOptions;
+
+    const users = await this.prisma.user.findMany({
+      where: whereClause,
+      orderBy: { createAt: 'desc' },
+      take,
+      skip,
+    });
+
+    return { data: users, totalCount: total };
   }
 
   async findOne(email: string) {
